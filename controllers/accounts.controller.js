@@ -1,6 +1,11 @@
-const accountsRepository = require("../repositories/accounts.repository");
-const transactions = require("./transactions.data");
+// imports externos
 
+// imports internos (repositories, prisma)
+
+const accountsRepository = require("../repositories/accounts.repository");
+const transactionsRepository = require("../repositories/transactions.repository");
+
+// funciones
 
 const getAccounts = async (req, res, next) => {
 
@@ -62,26 +67,33 @@ const createAccount = async (req, res, next) => {
   }
 };
 
-const getAccountTransactions = (req, res) => {
-  const accountId = Number(req.params.id);
+const getAccountTransactions = async (req, res, next) => {
+  try {
+    const accountId = Number(req.params.id);
 
-  const account = accounts.find(acc => acc.id === accountId);
+    const account = await accountsRepository.getById(accountId);
 
-  if (!account) {
-    return res.status(404).json({ message: "Cuenta no encontrada" });
+    if (!account) {
+      const error = new Error("Cuenta no encontrada");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const transactions = await transactionsRepository.getByAccountId(accountId);
+
+    res.json({
+      accountId,
+      balance: account.balance,
+      totalTransactions: transactions.length,
+      data: transactions,
+    });
+  } catch (error) {
+    next(error);
   }
-
-  const accountTransactions = transactions.filter(
-    tx => tx.accountId === accountId
-  );
-
-  res.json({
-    accountId,
-    total: accountTransactions.length,
-    data: accountTransactions,
-  });
 };
 
+
+// module.exports
 
 module.exports = {
   getAccounts,

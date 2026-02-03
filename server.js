@@ -1,5 +1,4 @@
 const express = require("express");
-const usersRoutes = require("./routes/users.routes");
 
 const accountsRoutes = require("./routes/accounts.routes");
 const transactionsRoutes = require("./routes/transactions.routes");
@@ -11,7 +10,6 @@ const app = express();
 app.use(express.json());
 
 
-app.use("/users", usersRoutes);
 app.use("/accounts", accountsRoutes);
 app.use("/transactions", transactionsRoutes);
 app.use(errorHandler);
@@ -22,4 +20,3 @@ app.use((req, res) => {
 });
 
 module.exports = app;
-

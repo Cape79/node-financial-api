@@ -1,7 +1,12 @@
+// imports externos
+
+// imports internos (repositories, prisma)
+
 const accountsRepository = require("../repositories/accounts.repository");
 const transactionsRepository = require("../repositories/transactions.repository");
 const prisma = require("../prisma/prismaClient");
 
+// funciones
 
 const createTransaction = async (req, res, next) => {
   try {
@@ -59,6 +64,7 @@ const createTransaction = async (req, res, next) => {
   }
 };
 
+// module.exports
 
 module.exports = {
   createTransaction,

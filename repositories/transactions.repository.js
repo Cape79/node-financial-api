@@ -6,6 +6,15 @@ const create = async (data) => {
   });
 };
 
+
+const getByAccountId = async (accountId) => {
+  return await prisma.transaction.findMany({
+    where: { accountId: Number(accountId) },
+    orderBy: { date: "desc" },
+  });
+};
+
 module.exports = {
   create,
+  getByAccountId,
 };
