@@ -1,59 +1,64 @@
-const accounts = require("./accounts.data");
-const transactions = require("./transactions.data");
+const accountsRepository = require("../repositories/accounts.repository");
+const transactionsRepository = require("../repositories/transactions.repository");
+const prisma = require("../prisma/prismaClient");
 
 
 const createTransaction = async (req, res, next) => {
   try {
     const { accountId, amount, type } = req.body;
-  
+
     if (!accountId || !amount || !type) {
       const error = new Error("accountId, amount y type son obligatorios");
       error.statusCode = 400;
-      throw error;      
-    }
-  
-    const account = accounts.find(
-      (acc) => acc.id === Number(accountId)
-    );
-  
-    if (!account) {
-      const error = new Error("Cuenta no encontrada");
-      error.statusCode = 404;
-      throw error;      
-    }
-  
-    if (type === "debit" && account.balance < amount) {
-      const error = new Error("Fondos insuficientes");
-      error.statusCode = 422;
       throw error;
     }
-  
-    if (type === "debit") {
-      account.balance -= amount;
-    }
-  
-    if (type === "credit") {
-      account.balance += amount;
-    }
-  
-    const transaction = {
-      id: transactions.length + 1,
-      accountId: account.id,
-      type,
-      amount,
-      date: new Date(),
-    };
-  
-    transactions.push(transaction);
-  
-    res.status(201).json({
-      transaction,
-      newBalance: account.balance,
+
+    await prisma.$transaction(async (tx) => {
+        const account = await tx.account.findUnique({
+        where: { id: Number(accountId) },
+      });
+
+      if (!account) {
+        const error = new Error("Cuenta no encontrada");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      if (type === "debit" && account.balance < amount) {
+        const error = new Error("Fondos insuficientes!");
+        error.statusCode = 422;
+        throw error;
+      }
+
+      // Calcular nuevo balance
+      const newBalance =
+        type === "debit"
+          ? account.balance - amount
+          : account.balance + amount;
+
+      // 1️⃣ Actualizar balance en la DB
+      await tx.account.update({
+        where: { id: account.id },
+        data: { balance: newBalance },
+      });
+
+      // 2️⃣ Crear la transacción en la DB
+      await tx.transaction.create({
+      data: {
+          accountId: account.id,
+          amount,
+          type,
+        },
+      });
     });
+
+    res.status(201).json({ message: "Transacción realizada correctamente" });
+
   } catch (error) {
     next(error);
   }
 };
+
 
 module.exports = {
   createTransaction,

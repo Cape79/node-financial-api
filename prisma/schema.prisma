@@ -16,4 +16,15 @@ model Account {
   id      Int     @id @default(autoincrement())
   owner   String
   balance Float
+  transactions Transaction[]
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  accountId Int
+  type      String
+  amount    Float
+  date      DateTime @default(now())
+
+  account   Account  @relation(fields: [accountId], references: [id])
 }
