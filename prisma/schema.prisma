@@ -28,3 +28,9 @@ model Transaction {
 
   account   Account  @relation(fields: [accountId], references: [id])
 }
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+}

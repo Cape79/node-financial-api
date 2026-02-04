@@ -2,7 +2,9 @@ const express = require("express");
 
 const accountsRoutes = require("./routes/accounts.routes");
 const transactionsRoutes = require("./routes/transactions.routes");
+const usersRoutes = require("./routes/users.routes");
 const errorHandler = require("./middlewares/error.middleware");
+
 
 const app = express();
 
@@ -12,6 +14,7 @@ app.use(express.json());
 
 app.use("/accounts", accountsRoutes);
 app.use("/transactions", transactionsRoutes);
+app.use("/users", usersRoutes);
 app.use(errorHandler);
 
 
