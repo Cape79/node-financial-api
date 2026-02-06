@@ -1,10 +1,11 @@
 // imports externos
 
-// imports internos (repositories, prisma)
+// imports internos
 
-const accountsRepository = require("../repositories/accounts.repository");
-const transactionsRepository = require("../repositories/transactions.repository");
-const prisma = require("../prisma/prismaClient");
+const {
+  createTransactionService,
+} = require("../services/transactions.service");
+
 
 // funciones
 
@@ -18,51 +19,18 @@ const createTransaction = async (req, res, next) => {
       throw error;
     }
 
-    await prisma.$transaction(async (tx) => {
-        const account = await tx.account.findUnique({
-        where: { id: Number(accountId) },
-      });
-
-      if (!account) {
-        const error = new Error("Cuenta no encontrada");
-        error.statusCode = 404;
-        throw error;
-      }
-
-      if (type === "debit" && account.balance < amount) {
-        const error = new Error("Fondos insuficientes!");
-        error.statusCode = 422;
-        throw error;
-      }
-
-      // Calcular nuevo balance
-      const newBalance =
-        type === "debit"
-          ? account.balance - amount
-          : account.balance + amount;
-
-      // 1️⃣ Actualizar balance en la DB
-      await tx.account.update({
-        where: { id: account.id },
-        data: { balance: newBalance },
-      });
-
-      // 2️⃣ Crear la transacción en la DB
-      await tx.transaction.create({
-      data: {
-          accountId: account.id,
-          amount,
-          type,
-        },
-      });
+    const result = await createTransactionService({
+      accountId,
+      amount,
+      type,
     });
 
-    res.status(201).json({ message: "Transacción realizada correctamente" });
-
+    res.status(201).json(result);
   } catch (error) {
     next(error);
   }
 };
+
 
 // module.exports
 

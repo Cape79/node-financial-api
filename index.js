@@ -1,8 +1,8 @@
-require("dotenv").config();
+const config = require("./config");
 const app = require("./server");
 
-const port = process.env.PORT;
+const port = config.port;
 
 app.listen(port, () => {
-  console.log("Servidor escuchando en http://localhost:" + port);
+  console.log(`Servidor escuchando en http://localhost:${port}`);
 });
