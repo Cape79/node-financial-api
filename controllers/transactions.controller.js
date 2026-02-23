@@ -1,9 +1,8 @@
-// imports externos
-
 // imports internos
 
 const {
   createTransactionService,
+  transferTransactionService,
 } = require("../services/transactions.service");
 
 
@@ -31,9 +30,32 @@ const createTransaction = async (req, res, next) => {
   }
 };
 
+const transferTransaction = async (req, res, next) => {
+  try {
+    const { fromAccountId, toAccountId, amount } = req.body;
+
+    if (!fromAccountId || !toAccountId || !amount) {
+      const error = new Error("fromAccountId, toAccountId y amount son obligatorios");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const result = await transferTransactionService({
+      fromAccountId,
+      toAccountId,
+      amount,
+    });
+
+    res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 // module.exports
 
 module.exports = {
   createTransaction,
+  transferTransaction,
 };

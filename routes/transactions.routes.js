@@ -4,6 +4,7 @@ const authMiddleware = require("../middlewares/auth.middleware");
 
 const {
   createTransaction,
+  transferTransaction,
 } = require("../controllers/transactions.controller");
 
 
@@ -11,6 +12,7 @@ const {
 router.use(authMiddleware);
 
 router.post("/", createTransaction);
+router.post("/transfer", transferTransaction);
 
 
 module.exports = router;
