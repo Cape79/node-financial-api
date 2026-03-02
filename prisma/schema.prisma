@@ -16,6 +16,8 @@ model Account {
   id      Int     @id @default(autoincrement())
   owner   String
   balance Float
+  userId  Int
+  user    User     @relation(fields: [userId], references: [id])
   transactions Transaction[]
 }
 
@@ -33,4 +35,5 @@ model User {
   id       Int    @id @default(autoincrement())
   email    String @unique
   password String
+  accounts Account[]
 }

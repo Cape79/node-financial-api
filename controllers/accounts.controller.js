@@ -5,6 +5,12 @@
 const accountsRepository = require("../repositories/accounts.repository");
 const transactionsRepository = require("../repositories/transactions.repository");
 
+const {
+  getSystemBalanceService,
+  getMyAccountsService,
+} = require("../services/accounts.service");
+
+
 // funciones
 
 const getAccounts = async (req, res, next) => {
@@ -57,6 +63,7 @@ const createAccount = async (req, res, next) => {
     const newAccount = {      
       owner,
       balance: Number(initialBalance),
+      userId: req.user.userId,
     };
   
     const created = await accountsRepository.create(newAccount);
@@ -93,11 +100,35 @@ const getAccountTransactions = async (req, res, next) => {
 };
 
 
+const getSystemBalance = async (req, res, next) => {
+  try {
+    const result = await getSystemBalanceService();
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getMyAccounts = async (req, res, next) => {
+  try {
+    const userId = req.user.userId;
+
+    const result = await getMyAccountsService(userId);
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 // module.exports
 
 module.exports = {
   getAccounts,
   getById,
   createAccount,
-  getAccountTransactions
+  getAccountTransactions,
+  getSystemBalance,
+  getMyAccounts,
 };

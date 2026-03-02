@@ -7,11 +7,15 @@ const {
   getById,
   createAccount,
   getAccountTransactions,
+  getSystemBalance,
+  getMyAccounts,
 } = require("../controllers/accounts.controller");
 
 router.use(authMiddleware);
 
 router.get("/", getAccounts);
+router.get("/system/balance", getSystemBalance);
+router.get("/me", getMyAccounts);
 router.get("/:id", getById);
 router.post("/", createAccount);
 router.get("/:id/transactions", getAccountTransactions);
