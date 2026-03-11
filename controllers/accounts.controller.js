@@ -8,6 +8,7 @@ const transactionsRepository = require("../repositories/transactions.repository"
 const {
   getSystemBalanceService,
   getMyAccountsService,
+  getAccountTransactionsService,
 } = require("../services/accounts.service");
 
 
@@ -77,6 +78,9 @@ const createAccount = async (req, res, next) => {
 const getAccountTransactions = async (req, res, next) => {
   try {
     const accountId = Number(req.params.id);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const sort = req.query.sort === "asc" ? "asc" : "desc";
 
     const account = await accountsRepository.getById(accountId);
 
@@ -86,14 +90,16 @@ const getAccountTransactions = async (req, res, next) => {
       throw error;
     }
 
-    const transactions = await transactionsRepository.getByAccountId(accountId);
+    //const transactions = await transactionsRepository.getByAccountId(accountId);
 
-    res.json({
+    const result = await getAccountTransactionsService({
       accountId,
-      balance: account.balance,
-      totalTransactions: transactions.length,
-      data: transactions,
+      page,
+      limit,
+      sort,
     });
+
+    res.json(result);
   } catch (error) {
     next(error);
   }
