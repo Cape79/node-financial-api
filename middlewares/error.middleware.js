@@ -1,3 +1,7 @@
+
+const logger = require("../config/logger");
+
+/*
 const errorHandler = (err, req, res, next) => {
   console.error(err);
 
@@ -7,5 +11,19 @@ const errorHandler = (err, req, res, next) => {
     message: err.message || "Error interno del servidor",
   });
 };
+*/
 
-module.exports = errorHandler;
+const errorMiddleware = (err, req, res, next) => {
+  logger.error({
+    message: err.message,
+    stack: err.stack,
+    path: req.originalUrl,
+    method: req.method,
+  });
+
+  res.status(err.statusCode || 500).json({
+    message: err.message || "Internal server error",
+  });
+};
+
+module.exports = errorMiddleware;

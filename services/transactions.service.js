@@ -1,6 +1,7 @@
 const prisma = require("../prisma/prismaClient");
 const accountsRepository = require("../repositories/accounts.repository");
 const transactionsRepository = require("../repositories/transactions.repository");
+const logger = require("../config/logger");
 
 const createTransactionService = async ({ accountId, amount, type }) => {
   return await prisma.$transaction(async (tx) => {
@@ -59,6 +60,13 @@ const transferTransactionService = async ({ fromAccountId, toAccountId, amount }
       throw error;
     }
 
+  logger.info({
+    message: "Starting transfer",
+    fromAccountId,
+    toAccountId,
+    amount,
+  });
+
   return await prisma.$transaction(async (tx) => {
 
     const [fromAccount, toAccount] = await Promise.all([
@@ -113,11 +121,20 @@ const transferTransactionService = async ({ fromAccountId, toAccountId, amount }
       },
     });
 
+    logger.info({
+      message: "Transfer completed",
+      fromAccountId,
+      toAccountId,
+      amount,
+    });
+
     return {
       transactionFrom,
       transactionTo,
     };
   });
+
+  
 };
 
 module.exports = {
