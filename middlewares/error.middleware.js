@@ -1,6 +1,6 @@
 
 const logger = require("../config/logger");
-const config = require("./index");
+const config = require("../config/index");
 
 /*
 const errorHandler = (err, req, res, next) => {
