@@ -1,5 +1,6 @@
 
 const logger = require("../config/logger");
+const config = require("./index");
 
 /*
 const errorHandler = (err, req, res, next) => {
@@ -22,7 +23,10 @@ const errorMiddleware = (err, req, res, next) => {
   });
 
   res.status(err.statusCode || 500).json({
-    message: err.message || "Internal server error",
+    message:
+      config.nodeEnv === "production"
+        ? "Internal server error"
+        : err.message,
   });
 };
 

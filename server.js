@@ -6,6 +6,7 @@ const accountsRoutes = require("./routes/accounts.routes");
 const transactionsRoutes = require("./routes/transactions.routes");
 const usersRoutes = require("./routes/users.routes");
 const errorHandler = require("./middlewares/error.middleware");
+const healthRoutes = require("./routes/health.routes");
 
 
 const app = express();
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/health", healthRoutes);
 app.use("/accounts", accountsRoutes);
 app.use("/transactions", transactionsRoutes);
 app.use("/users", usersRoutes);
