@@ -18,7 +18,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd node-financial-api/node-financial-api
-            git pull
+            git fetch --all
+            git reset --hard origin/main
             npm install
             npx prisma generate
             pm2 restart financial-api
