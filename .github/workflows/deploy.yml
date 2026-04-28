@@ -23,7 +23,6 @@ jobs:
             npm install
             npx prisma generate
             pm2 reload financial-api
-
-          # health check
+            # health check
             sleep 5
             curl -f http://localhost:3000/health
